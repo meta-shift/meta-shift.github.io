@@ -3,9 +3,10 @@ var DATA_TYPES = ['CHAMPIONS','ITEMS'];
 var QUEUE_TYPES = ['NORMAL_5X5', 'RANKED_SOLO'];
 var REGIONS = ['BR', 'EUNE', 'EUW', 'KR', 'LAN', 'LAS', 'NA', 'OCE', 'RU', 'TR']
 var COMMON_PROPERTIES = [ 'd_pr','d_wr','post_pr','post_wr','pre_pr','pre_wr'] // Properties common to all champion/object items, used for aggregation between data sets
-var ABBREVIATIONS = {'wr':'Win','pr':'Pick'}
+var ABBREVIATIONS = {'wr':'Win Rate','pr':'Popularity'}
 var DEFAULT_INFO = 'wr';
 
+var championKey;
 var jsonData;
 var chart;
 var dataSeries = { // The series responsible for the horizontal bar on the graph
@@ -24,32 +25,35 @@ $(function() {
 	$('input[type=checkbox][value=normal_5x5]').attr('checked',true);
 	$('input[type=checkbox][value=NA]').attr('checked',true);
 
-	generateDataSet(generateSelection());
+	championKey = $.getJSON('json/CHAMPION_KEY_NAME.json');
+	championKey.done(function() {
+		generateDataSet(generateSelection());
 
-	// Signifies that a new chart & data set must be generated when a new data set selection is chosen
-	$('input[type=checkbox]').change(function() {
-		needsNewChart = true;
-	}); 
-	// Generates a new chart with the info type chosen (win / pick)
-	$('input[type=radio]').change(function() {
-		currentInfo = this.value;
-		generateDataSet(generateSelection(), $('#sort-type').val());
-	})
-	// Sorts the current data set by the given value
-	$('#sort-type').change(function() {
-		sort($(this).val());
-	})
-	// Updates the chart based on all the selections
-	$('#update-selection').on('click', function() {
-		var sortProperty = $('#sort-type').val()
-		if (needsNewChart) {
-			generateDataSet(generateSelection(), sortProperty);
-		}
-		needsNewChart = false;
-		if (sortProperty != 'name') {
-			sort(sortProperty);
-		}
-	});	
+		// Signifies that a new chart & data set must be generated when a new data set selection is chosen
+		$('input[type=checkbox]').change(function() {
+			needsNewChart = true;
+		}); 
+		// Generates a new chart with the info type chosen (win / pick)
+		$('input[type=radio]').change(function() {
+			currentInfo = this.value;
+			generateDataSet(generateSelection(), $('#sort-type').val());
+		})
+		// Sorts the current data set by the given value
+		$('#sort-type').change(function() {
+			sort($(this).val());
+		})
+		// Updates the chart based on all the selections
+		$('#update-selection').on('click', function() {
+			var sortProperty = $('#sort-type').val()
+			if (needsNewChart) {
+				generateDataSet(generateSelection(), sortProperty);
+			}
+			needsNewChart = false;
+			if (sortProperty != 'name') {
+				sort(sortProperty);
+			}
+		});	
+	});
 });
 
 // Generates a selection object from checkboxes; used to choose appropriate JSON files
@@ -202,6 +206,12 @@ function generateMarkerData(markerSet,info) {
 // info : a string indicating what data is being displayed ('wr', 'pr')
 function generateChartOptions(info) {
 	var infoType = ABBREVIATIONS[info];
+	var yAxisLabel = '';
+	if (info == 'wr'){
+		yAxisLabel = 'Win Rate (games won/games picked)'
+	} else if (info == 'pr') {
+		yAxisLabel = 'Popularity (games picked/total games)';
+	}
 	var options = {
 		'chart': {
 			'renderTo':'container',
@@ -211,7 +221,7 @@ function generateChartOptions(info) {
 			'enabled': false
 		},
 		'title': {
-			'text': 'Change in '+ infoType + ' Rate after Patch 5.14'
+			'text': 'Change in '+ infoType + ' after Patch 5.14'
 		},
 
 		'xAxis': {
@@ -224,13 +234,13 @@ function generateChartOptions(info) {
 
 		'yAxis': [{
 			'title': {
-				'text': infoType + ' Rate'
+				'text': yAxisLabel
 			},
 			'plotLines': []			
 		},
 		{
 			'title' : {
-				'text': infoType + ' Rate'
+				'text': yAxisLabel
 			},
 			'linkedTo':0,
 			'opposite':true
@@ -252,7 +262,7 @@ function generateChartOptions(info) {
 				} else {
 					pt = this.points[0].point;
 				}
-				var info = infoType.toLowerCase() + ' rate';
+				var info = infoType.toLowerCase();
 					// if change is negative, 5.11 > 5.14 and there's a decrease
 					if (pt['d_'+pt.currentInfo] < 0 ) { 
 						return '<em>' + pt.name + '</em><br>5.11 ' + info + ': ' +pt.high + '%<br>5.14 ' + info + ': ' + pt.low + '%<br>Change in ' + info + ': ' + roundOff((pt.low-pt.high))+'%';
