@@ -288,7 +288,7 @@ function generateChartOptions(info) {
 			'enabled': false
 		},
 		'title': {
-			'text': 'Change in '+ infoType + ' after Patch 5.14'
+			'text': 'Change in '+ infoType + ' after Patch 5.13'
 		},
 
 		'xAxis': {
