@@ -25,9 +25,10 @@ $(function() {
 	$('input[type=checkbox][value=normal_5x5]').attr('checked',true);
 	$('input[type=checkbox][value=NA]').attr('checked',true);
 
-	championKey = $.getJSON('json/CHAMPION_KEY_NAME.json');
-	championKey.done(function() {
+	$.getJSON('json/CHAMPION_KEY_NAME.json').done(function(data) {
+		championKey = data;
 		generateDataSet(generateSelection());
+		console.log(championKey);
 
 		// Signifies that a new chart & data set must be generated when a new data set selection is chosen
 		$('input[type=checkbox]').change(function() {
@@ -85,7 +86,7 @@ function generateChart(jsonData) {
 	markerSeries.data = generateMarkerData(dataSeries.data,currentInfo);
 	markerSeries.currentInfo = currentInfo;
 	options = generateChartOptions(currentInfo);
-	options.xAxis.categories = getArrayOf(dataSeries.data,'name');
+	options.xAxis.categories = getCategories(dataSeries.data);
 
 	options.series.push(dataSeries);
 	options.series.push(markerSeries);
@@ -293,7 +294,7 @@ function generateChartOptions(info) {
 		dataSeries.data.sort(sortByProperty(property));
 		$('#currently-sorting-by').html($("option[value="+property+"]").html());
 		markerSeries.data = generateMarkerData(dataSeries.data,dataSeries.currentInfo);
-		chart.xAxis[0].setCategories(getArrayOf(dataSeries.data,'name'));
+		chart.xAxis[0].setCategories(getCategories(dataSeries.data));
 		chart.series[0].update(chart.series[0].options);
 		chart.series[1].update(chart.series[1].options);
 	}
@@ -313,13 +314,16 @@ function sortByProperty(property) {
 
 // Returns an array of the given property for each element in dataSet
 // dataSet : an array of objects from which to get the property
-// property : a string indicating which property to make an array of
-function getArrayOf(dataSet,property){
+function getCategories(dataSet){
 	var array = [];
 	for (var i = 0; i < dataSet.length; i++){
-		array.push(dataSet[i][property])
+		array.push(getNameById(dataSet[i].id))
 	}
 	return array;
+}
+
+function getNameById(id) {
+	return championKey[id];
 }
 
 // Rounds a given number to two decimal places
