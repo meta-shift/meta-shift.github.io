@@ -216,7 +216,7 @@ function generateChartOptions(info) {
 	var options = {
 		'chart': {
 			'renderTo':'container',
-			'inverted': true
+			'inverted': true,
 		},
 		'credits': {
 			'enabled': false
