@@ -43,9 +43,9 @@
                                     <option value="pre_wr">Win rate (pre-patch)</option>
                                     <option value="post_wr">Win rate (post-patch)</option>
                                     <option value="d_wr">Win rate (change)</option>
-                                    <option value="pre_pr">Pick rate (pre-patch)</option>
-                                    <option value="post_pr">Pick rate (post-patch)</option>
-                                    <option value="d_pr">Pick rate (change)</option>
+                                    <option value="pre_pr">Popularity (pre-patch)</option>
+                                    <option value="post_pr">Popularity (post-patch)</option>
+                                    <option value="d_pr">Popularity (change)</option>
                                 </select>
                             </td>
                             <td><input type="checkbox" name="queue" value="normal_5x5">Normal</input></td>
@@ -55,7 +55,7 @@
                             </td>
                         </tr>  
                         <tr>
-                            <td><label style="font-weight:normal;"><input type="radio" name="data-type" value="pr"> Pick Rate</input></label></td>
+                            <td><label style="font-weight:normal;"><input type="radio" name="data-type" value="pr"> Popularity</input></label></td>
                             <td>
                                 Current sort: <span id="currently-sorting-by">Champion name</span>
                             </td>
@@ -114,7 +114,7 @@
                     B: v5.14</strong>
                 </div>
                 <div class="col-xs-6 text-right">
-                    <strong>Toggle:</strong> <button type="button" class="btn btn-info active" id="wins-picks-chart">Win/Pick Rate</button> <button type="button" class="btn btn-info" id="roles-chart">Roles</button>
+                    <strong>Toggle:</strong> <button type="button" class="btn btn-info active" id="wins-picks-chart">Win/Popularity</button> <button type="button" class="btn btn-info" id="roles-chart">Roles</button>
                 </div>
             </div>
             <br>
@@ -125,9 +125,9 @@
                         <th>Win (A)</th>
                         <th>Win (B)</th>
                         <th>&Delta; Win</th>
-                        <th>Pick (A)</th>
-                        <th>Pick (B)</th>
-                        <th>&Delta; Pick</th>
+                        <th>Popularity (A)</th>
+                        <th>Popularity (B)</th>
+                        <th>&Delta; Popularity</th>
                         <th>Fighter (A)</th>
                         <th>Fighter (B)</th>
                         <th>Mage (A)</th>
@@ -146,9 +146,9 @@
                         <th>Pre Win Rate</th>
                         <th>Post Win Rate</th>
                         <th>Change in Win Rate</th>
-                        <th>Pre Pick Rate</th>
-                        <th>Post Pick Rate</th>
-                        <th>Change in Pick Rate</th>
+                        <th>Pre Popularity</th>
+                        <th>Post Popularity</th>
+                        <th>Change in Popularity</th>
                         <th>Fighter (A)</th>
                         <th>Fighter (B)</th>
                         <th>Mage (A)</th>
