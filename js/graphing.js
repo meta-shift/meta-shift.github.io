@@ -26,6 +26,15 @@ $(function() {
 	$('input[type=checkbox][value=normal_5x5]').attr('checked',true);
 	$('input[type=checkbox][value=NA]').attr('checked',true);
 
+	$table = $('#example').DataTable({
+		"bPaginate": false,
+		"columnDefs": [
+		{
+			"targets": [ 7,8,9,10,11,12,13,14,15,16 ],
+			"visible": false
+		}
+		]
+	});
 
 	$.getJSON('json/CHAMPION_KEY_NAME.json').done(function(data) {
 		championKey = data;
@@ -80,16 +89,6 @@ $(function() {
 });
 
 function generateTable(jsonData) {
-	$table = $('#example').DataTable({
-		"bPaginate": false,
-		"columnDefs": [
-		{
-			"targets": [ 7,8,9,10,11,12,13,14,15,16 ],
-			"visible": false
-		}
-		]
-	});
-
 	$table.clear();
 	jsonData.forEach(function(champion) {
 		var d_wr = champion['d_wr'] >= 0.0 ? green(champion['d_wr'].toFixed(2) + "%") : red(champion['d_wr'].toFixed(2) + "%");
