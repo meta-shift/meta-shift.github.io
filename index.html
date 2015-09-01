@@ -178,9 +178,11 @@
             function green(text){
                 return "<span style='color:green'>" + text + "</span>";
             }
+
             function red(text){
                 return "<span style='color:red'>" + text + "</span>";
             }
+
             $(document).ready(function() {
                 var $table = $('#example').DataTable( {
                     "bPaginate": false,
@@ -191,6 +193,7 @@
                         }
                     ]
                 } );
+
                 $.getJSON('json/NORMAL_5X5_NA_CHAMPIONS.json', function(json) {
                     $table.clear();
                     for (champion of json) {
@@ -218,20 +221,29 @@
                     }
                     $table.draw();
                 });
+
                 $('#wins-picks-chart').on('click', function(){
+                    if ($(this).hasClass('active') && !$('#roles-chart').hasClass('active')) {
+                        return;
+                    }
                     $(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
                     for (var i=1; i<=6; i++) {
                         var column = $table.column( i );
                         column.visible( ! column.visible() );
                     }
                 });
+
                 $('#roles-chart').on('click', function(){
+                    if ($(this).hasClass('active') && !$('#wins-picks-chart').hasClass('active')) {
+                        return;
+                    }
                     $(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
                     for (var i=7; i<=16; i++) {
                         var column = $table.column( i );
                         column.visible( ! column.visible() );
                     }
                 });
+
             } );
         </script>
     </body>
