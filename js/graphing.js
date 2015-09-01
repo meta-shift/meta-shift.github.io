@@ -8,6 +8,7 @@ var DEFAULT_INFO = 'wr';
 
 var championKey;
 var jsonData;
+var $table;
 var chart;
 var dataSeries = { // The series responsible for the horizontal bar on the graph
 	'currentInfo' : DEFAULT_INFO,
@@ -25,10 +26,10 @@ $(function() {
 	$('input[type=checkbox][value=normal_5x5]').attr('checked',true);
 	$('input[type=checkbox][value=NA]').attr('checked',true);
 
+
 	$.getJSON('json/CHAMPION_KEY_NAME.json').done(function(data) {
 		championKey = data;
 		generateDataSet(generateSelection());
-		console.log(championKey);
 
 		// Signifies that a new chart & data set must be generated when a new data set selection is chosen
 		$('input[type=checkbox]').change(function() {
@@ -54,8 +55,69 @@ $(function() {
 				sort(sortProperty);
 			}
 		});	
+		$('#wins-picks-chart').on('click', function(){
+			if ($(this).hasClass('active') && !$('#roles-chart').hasClass('active')) {
+				return;
+			}
+			$(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
+			for (var i=1; i<=6; i++) {
+				var column = $table.column( i );
+				column.visible( ! column.visible() );
+			}
+		});
+
+		$('#roles-chart').on('click', function(){
+			if ($(this).hasClass('active') && !$('#wins-picks-chart').hasClass('active')) {
+				return;
+			}
+			$(this).hasClass('active') ? $(this).removeClass('active') : $(this).addClass('active');
+			for (var i=7; i<=16; i++) {
+				var column = $table.column( i );
+				column.visible( ! column.visible() );
+			}
+		});
 	});
 });
+
+function generateTable(jsonData) {
+	$table = $('#example').DataTable({
+		"bPaginate": false,
+		"columnDefs": [
+		{
+			"targets": [ 7,8,9,10,11,12,13,14,15,16 ],
+			"visible": false
+		}
+		]
+	});
+
+	$table.clear();
+	jsonData.forEach(function(champion) {
+		var d_wr = champion['d_wr'] >= 0.0 ? green(champion['d_wr'].toFixed(2) + "%") : red(champion['d_wr'].toFixed(2) + "%");
+		var d_pr = champion['d_pr'] >= 0.0 ? green(champion['d_pr'].toFixed(2) + "%") : red(champion['d_pr'].toFixed(2) + "%");
+		$table.row.add( [
+			champion['name'],
+			champion['pre_wr'].toFixed(2) + "%",
+			champion['post_wr'].toFixed(2) + "%",
+			d_wr,
+			champion['pre_pr'].toFixed(2) + "%",
+			champion['post_pr'].toFixed(2) + "%",
+			d_pr,
+			champion['pre_roles']['fighter'].toFixed(2) + "%",
+			champion['post_roles']['fighter'].toFixed(2) + "%",
+			champion['pre_roles']['mage'].toFixed(2) + "%",
+			champion['post_roles']['mage'].toFixed(2) + "%",
+			champion['pre_roles']['marksman'].toFixed(2) + "%",
+			champion['post_roles']['marksman'].toFixed(2) + "%",
+			champion['pre_roles']['support'].toFixed(2) + "%",
+			champion['post_roles']['support'].toFixed(2) + "%",
+			champion['pre_roles']['tank'].toFixed(2) + "%",
+			champion['post_roles']['tank'].toFixed(2) + "%",
+			] );
+	});
+	$table.draw();
+
+}
+
 
 // Generates a selection object from checkboxes; used to choose appropriate JSON files
 function generateSelection() {
@@ -166,6 +228,8 @@ function generateDataSet(selection, sortProperty) {
 					if (sortProperty != 'name') {
 						sort(sortProperty);
 					}
+					// Creates the table
+					generateTable(combined);
 				});
 		}
 	}
@@ -275,7 +339,6 @@ function generateChartOptions(info) {
 			'plotOptions': {
 				'stickyTracking' : true
 			}
-
 		};
 		if (info == 'wr') {
 			options['yAxis'][0]['plotLines'].push({
@@ -288,16 +351,16 @@ function generateChartOptions(info) {
 		}
 		return options;
 	}
-	// Sorts the chart based on the property given
-	// property : a string identifying the property by which to sort the graph
-	function sort(property){
-		dataSeries.data.sort(sortByProperty(property));
-		$('#currently-sorting-by').html($("option[value="+property+"]").html());
-		markerSeries.data = generateMarkerData(dataSeries.data,dataSeries.currentInfo);
-		chart.xAxis[0].setCategories(getCategories(dataSeries.data));
-		chart.series[0].update(chart.series[0].options);
-		chart.series[1].update(chart.series[1].options);
-	}
+// Sorts the chart based on the property given
+// property : a string identifying the property by which to sort the graph
+function sort(property){
+	dataSeries.data.sort(sortByProperty(property));
+	$('#currently-sorting-by').html($("option[value="+property+"]").html());
+	markerSeries.data = generateMarkerData(dataSeries.data,dataSeries.currentInfo);
+	chart.xAxis[0].setCategories(getCategories(dataSeries.data));
+	chart.series[0].update(chart.series[0].options);
+	chart.series[1].update(chart.series[1].options);
+}
 
 // A function generator used by Arrays.sort to sort by the given property
 // property : a string identifying the property by which to sort the array
@@ -322,6 +385,8 @@ function getCategories(dataSet){
 	return array;
 }
 
+//Returns the English name of a champion based on the id
+// id : a number representing the champion id
 function getNameById(id) {
 	return championKey[id];
 }
@@ -332,3 +397,15 @@ function roundOff(num) {
 	return parseFloat((Math.round(num*100.0)/100.0).toFixed(2));
 }
 
+
+// Returns a span with the text content with green styling
+// text : a string indicating the text to colour green
+function green(text){
+	return "<span style='color:green'>" + text + "</span>";
+}
+
+// Returns a span with the text content with red styling
+// text : a string indicating the text to colour red
+function red(text){
+	return "<span style='color:red'>" + text + "</span>";
+}
