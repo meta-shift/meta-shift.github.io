@@ -185,15 +185,18 @@ function generateDataSet(selection, sortProperty) {
 		var requests = [];
 		var numOfSets = 0;
 		var combined = [];
-		for (var i = 0; i < queueList.length; i++) {
-			for (var j = 0; j < regionList.length; j++) {
+		for (var i = 0; i < queueList.length; i++) { // For each queue selected
+			for (var j = 0; j < regionList.length; j++) { // For each region selected
 				var request = $.getJSON('json/'+ queueList[i]+'_'+regionList[j]+'_'+selection.data +'.json');
 					// When each request is done, add the pre_, post_, and d_ values to the combined array
 					request.done(function(data) {
 						numOfSets++;
+						// If a base JSON has not been made, make one
 						if (combined.length == 0) {
 							data.forEach(function(entry) {
-								combined.push(JSON.parse(JSON.stringify(entry)));
+								var baseEntry = JSON.parse(JSON.stringify(entry));
+								baseEntry.name = getNameById(baseEntry.id) // Ensures English names
+								combined.push(baseEntry);
 							});
 
 						} else {					
